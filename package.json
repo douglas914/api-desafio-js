@@ -1,0 +1,16 @@
+{
+  "name": "02desafio",
+  "version": "1.0.0",
+  "description": "",
+  "main": "i_expressteste.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "net-snmp": "^1.2.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
