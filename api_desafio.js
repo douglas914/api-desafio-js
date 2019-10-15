@@ -9,9 +9,18 @@ var oids = ["1.3.6.1.2.1.1.1.0", "1.3.6.1.2.1.2.2.1.8.1001", "1.3.6.1.2.1.2.2.1.
 
 app.get('/', function (req, res) {
 
+var resposta_json = 	{
+				acess:"date",
+				sysname:[],
+				estado:["porta1 = ","porta2 = " ]
+			}
+//console.log(resposta2.sysname);
+
 
 session.get (oids, function (error, varbinds) {
-var resposta = "";
+//var resposta = "";
+var datetime = new Date();
+resposta_json['acess'] = datetime;
     if (error) {
         console.error (error);
     } else {
@@ -19,8 +28,21 @@ var resposta = "";
             if (snmp.isVarbindError (varbinds[i]))
                 console.error (snmp.varbindError (varbinds[i]))
             else
-              resposta = resposta + (varbinds[i].oid + " = " + varbinds[i].value + "\n");
-	res.send("Todos os dados = " + resposta);
+	
+		if (varbinds[i].value == 1)
+			resposta_json['estado'][i] = resposta_json['estado'][i]+"=UP";
+			//resposta2.stat["porta1"] = "UP";
+		else if (varbinds[i].value == 2)
+			resposta_json['estado'][i] = resposta_json['estado'][i]+"=DOWN"; // verificar objeto json e consertar o algoritimo
+								// i=0 e stat
+			//resposta2.stat["porta2"] == "DOWN";
+		else
+			resposta_json['sysname'] = (varbinds[i].value + "");
+
+		res.json(resposta_json);		
+		
+              //resposta = resposta + (varbinds[i].oid + " = " + varbinds[i].value + "\n");
+	//res.send("Todos os dados = " + resposta);
     }
 
     // If done, close the session
@@ -81,6 +103,25 @@ session.get (["1.3.6.1.2.1.2.2.1.8.1002"], function (error, varbinds) {
                      });
 });
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!\n');
+app.get('/nome', function(req, res) {
+
+
+session.get(["1.3.6.1.2.1.1.1.0"], function (error, varbinds) {
+  if(error) {
+	console.error(error);
+  } else {
+	for (var i = 0; i < varbinds.length; i++)
+	if(snmp.isVarbindError (varbinds[i]))
+		console.error (snmp.varbindError (varbinds[i]))
+	else
+	res.send(varbinds[i]);
+	}
+});
+	session.trap (snmp.TrapType.LinkDown, function (error) {
+	if (error)
+	console.error(error);
+	});
+});
+app.listen(5000, function () {
+  console.log('API desafio na porta 5000!\n');
 });
