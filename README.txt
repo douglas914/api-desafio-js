@@ -3,10 +3,11 @@ Primeira versao da API
 	Faltou /nome - RESOLVIDO
 	Porta 5000 - RESOLVIDO
 	Sem formata√ao JSON-RESOLVIDO
---- Nao funciona para todos os casos ainda! --- 
-Na vers√o 1.3 -  inicio da implementa√√o da fun√√o getdadossnmp
+	
+	Solicitacao apenas de porta fornece "null".
+	
+Na versa√o .4 -  implementada a funcao getdadossnmp, obtem todos os dados e responde com o que foi solicitad
 
-- Ajustar o algor√timo que monta o json
 - Sem interatividade
 - Sem docker
 - Sem banco de dados
