@@ -81,6 +81,25 @@ session.get (["1.3.6.1.2.1.2.2.1.8.1002"], function (error, varbinds) {
                      });
 });
 
+app.get('/nome', function(req, res) {
+
+
+session.get(["1.3.6.1.2.1.1.1.0"], function (error, varbinds) {
+  if(error) {
+	console.error(error);
+  } else {
+	for (var i = 0; i < varbinds.length; i++)
+	if(snmp.isVarbindError (varbinds[i]))
+		console.error (snmp.varbindError (varbinds[i]))
+	else
+	res.send("Apenas NOME switch = " + varbinds[i].oid + " = " + varbinds[i].value+"\n");
+	}
+});
+	session.trap (snmp.TrapType.LinkDown, function (error) {
+	if (error)
+	console.error(error);
+	});
+});
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!\n');
 });
