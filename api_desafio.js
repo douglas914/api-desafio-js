@@ -7,18 +7,109 @@ var session = snmp.createSession ("200.137.87.181", "d3s4f10");
 
 var oids = ["1.3.6.1.2.1.1.1.0", "1.3.6.1.2.1.2.2.1.8.1001", "1.3.6.1.2.1.2.2.1.8.1002"];
 
+var oids_2 = 	[
+			{	
+			nome:"nome1",
+			name_oid:	["1.3.6.1.2.1.1.1.0"],
+			ports:  { port1:["1.3.6.1.2.1.2.2.1.8.1001"],
+				  port2:["1.3.6.1.2.1.2.2.1.8.1002"]
+				}
+			}
+		]
+
+		
+//console.log(oids_2.lenght)
+for (x in oids_2) {
+//console.log(x)
+//console.log(oids_2[x].ports);
+//console.log(oids_2[x].name_oid);
+	//for (p in oids_2[x].ports)
+	//	console.log(oids_2[x].ports[p]);
+	var teste = Object.keys(oids_2[x].ports);
+	console.log(teste.length);
+}
+
+//console.log(oids_2.sys[0]['name_oid']);
+
+function getdadossnmp() {
+
+var resposta_json = 	{
+				acess:"date",
+				sysname:[],
+				estado:[]
+			};
+
+
+
+	for (x in oids_2) {
+	session.get(oids_2[x].name_oid, function(error, varbinds) {
+		var datetime = new Date();
+		resposta_json['acess'] = datetime;
+		if (error) {
+		        console.error (error);
+		    } else {
+		        for (var i = 0; i < varbinds.length; i++)
+		        	if (snmp.isVarbindError (varbinds[i]))
+                			console.error (snmp.varbindError (varbinds[i]))
+            			else
+					resposta_json['sysname'] = (varbinds[i].value + "");
+			}
+		
+		//console.log(resposta_json);
+	});
+
+	 for (p in oids_2[x].ports) {
+	var temp = oids_2[x].ports[p];	
+	var count = Object.keys(oids_2[x].ports);
+	var z = 0; 
+	session.get (temp, function(error, varbinds) {
+		 if (error) {
+        		console.error (error);
+		 } else {
+	        for (var i = 0; i < varbinds.length; i++)
+        	    if (snmp.isVarbindError (varbinds[i]))
+                	console.error (snmp.varbindError (varbinds[i]))
+            		else
+			if (varbinds[i].value == 1)
+				resposta_json['estado'][z] = Object.keys(oids_2[x].ports)[z]+"=UP";
+
+			else if (varbinds[i].value == 2)
+				resposta_json['estado'][z] = Object.keys(oids_2[x].ports)[z]+"=DOWN";
+		}
+	z++;
+	//console.log(Object.keys(oids_2[x].ports)[z])
+	//console.log(z)	
+	
+		if ( z == count.length){
+			console.log(resposta_json);
+		}
+        	});
+	}
+    
+         session.trap (snmp.TrapType.LinkDown, function (error) {
+             if (error)
+                     console.error (error);
+                     });
+
+
+
+
+	}
+
+}
+getdadossnmp()
+
 app.get('/', function (req, res) {
 
 var resposta_json = 	{
 				acess:"date",
 				sysname:[],
 				estado:["porta1 = ","porta2 = " ]
-			}
-//console.log(resposta2.sysname);
+			};
 
 
 session.get (oids, function (error, varbinds) {
-//var resposta = "";
+
 var datetime = new Date();
 resposta_json['acess'] = datetime;
     if (error) {
@@ -31,22 +122,17 @@ resposta_json['acess'] = datetime;
 	
 		if (varbinds[i].value == 1)
 			resposta_json['estado'][i] = resposta_json['estado'][i]+"=UP";
-			//resposta2.stat["porta1"] = "UP";
+
 		else if (varbinds[i].value == 2)
-			resposta_json['estado'][i] = resposta_json['estado'][i]+"=DOWN"; // verificar objeto json e consertar o algoritimo
-								// i=0 e stat
-			//resposta2.stat["porta2"] == "DOWN";
+			resposta_json['estado'][i] = resposta_json['estado'][i]+"=DOWN";
+
 		else
 			resposta_json['sysname'] = (varbinds[i].value + "");
 
 		res.json(resposta_json);		
 		
-              //resposta = resposta + (varbinds[i].oid + " = " + varbinds[i].value + "\n");
-	//res.send("Todos os dados = " + resposta);
     }
 
-    // If done, close the session
-    //     session.close ();
         });
     
          session.trap (snmp.TrapType.LinkDown, function (error) {
