@@ -135,6 +135,26 @@ app.get(/\/*/, function (req, res) {
 	getdadossnmp(res,req.originalUrl);
 });
 
+app.put(/\/*/,function(req, res) { 
+	var solicitacao = req.originalUrl;
+	solicitacao = solicitacao.replace(/\//g,"");
+	var sol_split = solicitacao.split('@');
+	if(!(/^porta[0-9]*@*/).test(solicitacao)){
+		res.send("\nFormato deve ser : porta[NUMERO]@oid ex: porta1@1.3.2.1...\n");
+	}else if(!(oids_2[0].ports[sol_split[0]]== undefined)) { //oids_2 hardcoded em 0 pois nao esta implementado adicionar outros switchs, apenas outras portas
+		oids_2[0].ports[sol_split[0]] = 	[sol_split[1]];
+		res.send("Porta atualizada");	
+	} else {
+		oids_2[0].ports[sol_split[0]] = 	[sol_split[1]]; 
+		res.send("Porta adicionada");	
+
+	}
+
+});
+
+
+
+
 app.listen(5000, function () {
   console.log('API desafio na porta 5000!\n');
 });
