@@ -147,12 +147,21 @@ app.put(/\/*/,function(req, res) {
 	} else {
 		oids_2[0].ports[sol_split[0]] = 	[sol_split[1]]; 
 		res.send("Porta adicionada");	
-
 	}
 
 });
 
+app.delete(/porta[0-9]*/,function(req,res)  {
+	var solicitacao = req.originalUrl
+	solicitacao = solicitacao.replace(/\//g,"");
+	if(!(oids_2[0].ports[solicitacao] == undefined)) {
+		delete oids_2[0].ports[solicitacao];
+		res.send("Porta deletada");
+	} else {
+		res.send("Porta nao encontrada");
+	}
 
+});
 
 
 app.listen(5000, function () {
