@@ -1,6 +1,8 @@
 var express = require('express');
 var app = express();
 
+const fs = require('fs');
+
 var snmp = require ("net-snmp");
 
 var session = snmp.createSession ("200.137.87.181", "d3s4f10");
@@ -58,6 +60,12 @@ if(!(solicitacao == '/' || solicitacao == '/nome' || /\/porta*/.test(solicitacao
 			}
 		if (solicitacao == '/nome') {
 		res.json(resposta_json);
+		fs.writeFile('./datalog.txt', JSON.stringify(resposta_json),{ flag: 'a+' }, (err) => {
+  		if (err) {
+		    console.error(err)
+		  }
+  //file written successfully
+  		});
 		}	
 	//console.log(resposta_json);
 	});
@@ -65,7 +73,7 @@ if(!(solicitacao == '/' || solicitacao == '/nome' || /\/porta*/.test(solicitacao
 	 if(solicitacao == '/') {
 	 for (p in oids_2[x].ports) {
 	var temp = oids_2[x].ports[p];
-	console.log(p);	
+//	console.log(p);	
 	var count = Object.keys(oids_2[x].ports);
 	var z = 0; 
 	session.get (temp, function(error, varbinds) {
@@ -84,6 +92,12 @@ if(!(solicitacao == '/' || solicitacao == '/nome' || /\/porta*/.test(solicitacao
 		}
 	z++;
 		if ( z == count.length){
+		fs.writeFile('./datalog.txt', JSON.stringify(resposta_json), { flag: 'a+' }, (err) => {
+  		if (err) {
+		    console.error(err)
+		  }
+  //file written successfully
+  		});
 			res.json(resposta_json);
 			//return resposta_json;
 		}
@@ -111,6 +125,12 @@ if(!(solicitacao == '/' || solicitacao == '/nome' || /\/porta*/.test(solicitacao
 				else if (varbinds[i].value == 2)
 					resposta_json[solicitacao] = "=DOWN(2)";			
 			}
+		fs.writeFile('./datalog.txt', JSON.stringify(resposta_json), { flag: 'a+' } ,(err) => {
+  		if (err) {
+		    console.error(err)
+		  }
+  //file written successfully
+  		});
 			res.json(resposta_json);
 			
 		});
